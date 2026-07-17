@@ -249,7 +249,7 @@ if (form) {
         try {
 
             const response = await fetch(
-                "https://jaimin-portfolio-api.onrender.com/api/contact",
+                "http://localhost:5000/api/contact",
                 {
                     method: "POST",
                     headers: {
@@ -336,3 +336,23 @@ console.log(
 "%cPortfolio Developed by Jaiminkumar Vaghela",
 "color:#7C5CFF;font-size:18px;font-weight:bold;"
 );
+
+
+// Enable CORS
+app.use(cors({
+
+    origin:[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500"
+    ],
+
+    methods:[
+        "GET",
+        "POST"
+    ],
+
+    allowedHeaders:[
+        "Content-Type"
+    ]
+
+}));

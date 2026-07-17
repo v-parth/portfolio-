@@ -1,191 +1,485 @@
 const Contact = require("../models/contact");
 const transporter = require("../config/mailer");
 
+const ExcelJS = require("exceljs");
+const path = require("path");
+
+
 const createContact = async (req, res) => {
+
     try {
-        const { name, email, mobile, subject, message } = req.body;
+
+        const { 
+            name, 
+            email, 
+            mobile, 
+            subject, 
+            message 
+        } = req.body;
+
+
 
         if (!name || !email || !mobile || !subject || !message) {
+
             return res.status(400).json({
-                success: false,
-                message: "Please fill all fields."
+
+                success:false,
+                message:"Please fill all fields."
+
             });
+
         }
 
-        // Save Contact
+
+
+        // ===========================================
+        // Save Contact in MongoDB
+        // ===========================================
+
+
         const contact = await Contact.create({
+
             name,
             email,
             mobile,
             subject,
             message
+
         });
 
+
+
         // ===========================================
-        // Email to You
+        // Save Contact Data Into Excel
         // ===========================================
+
+
+        const filePath = path.join(
+
+            __dirname,
+            "../excel/clients.xlsx"
+
+        );
+
+
+
+        const workbook = new ExcelJS.Workbook();
+
+
+
+        try {
+
+            await workbook.xlsx.readFile(filePath);
+
+
+        } catch(error) {
+
+
+            const worksheet = workbook.addWorksheet("Clients");
+
+
+
+            worksheet.columns = [
+
+                {
+                    header:"Name",
+                    key:"name",
+                    width:20
+                },
+
+                {
+                    header:"Email",
+                    key:"email",
+                    width:30
+                },
+
+                {
+                    header:"Mobile",
+                    key:"mobile",
+                    width:15
+                },
+
+                {
+                    header:"Subject",
+                    key:"subject",
+                    width:25
+                },
+
+                {
+                    header:"Message",
+                    key:"message",
+                    width:40
+                },
+
+                {
+                    header:"Date",
+                    key:"date",
+                    width:25
+                }
+
+            ];
+
+        }
+
+
+
+        const worksheet = workbook.getWorksheet("Clients");
+
+
+
+        worksheet.addRow({
+
+            name,
+            email,
+            mobile,
+            subject,
+            message,
+            date:new Date().toLocaleString()
+
+        });
+
+
+
+        await workbook.xlsx.writeFile(filePath);
+
+
+
+
+        // ===========================================
+        // Email To Admin
+        // ===========================================
+
 
         await transporter.sendMail({
-            from: `"Portfolio Contact Form" <${process.env.EMAIL_USER}>`,
-            to: process.env.EMAIL_USER,
-            subject: `📩 New Contact Form - ${subject}`,
 
-            html: `
-            <div style="font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;">
-                <div style="max-width:650px;margin:auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,.1);">
+            from:`"Portfolio Contact Form" <${process.env.EMAIL_USER}>`,
 
-                    <div style="background:#2563eb;color:#fff;padding:25px;text-align:center;">
-                        <h2 style="margin:0;">📩 New Contact Form Submission</h2>
-                    </div>
+            to:process.env.EMAIL_USER,
 
-                    <div style="padding:30px;line-height:1.8;">
+            subject:`📩 New Contact Form - ${subject}`,
 
-                        <table style="width:100%;border-collapse:collapse;">
+            html:`
 
-                            <tr>
-                                <td style="padding:10px;font-weight:bold;">Name</td>
-                                <td>${name}</td>
-                            </tr>
 
-                            <tr style="background:#f7f7f7;">
-                                <td style="padding:10px;font-weight:bold;">Email</td>
-                                <td>${email}</td>
-                            </tr>
+            <div style="font-family:Arial;background:#f4f4f4;padding:30px">
 
-                            <tr>
-                                <td style="padding:10px;font-weight:bold;">Mobile</td>
-                                <td>${mobile}</td>
-                            </tr>
+            <div style="max-width:650px;margin:auto;background:#fff;padding:30px">
 
-                            <tr style="background:#f7f7f7;">
-                                <td style="padding:10px;font-weight:bold;">Subject</td>
-                                <td>${subject}</td>
-                            </tr>
 
-                        </table>
+            <h2>
+            📩 New Contact Form Submission
+            </h2>
 
-                        <h3 style="margin-top:30px;">Message</h3>
 
-                        <div style="background:#f8f9fa;padding:20px;border-left:4px solid #2563eb;border-radius:5px;">
-                            ${message}
-                        </div>
+            <table>
 
-                    </div>
+            <tr>
+            <td><b>Name:</b></td>
+            <td>${name}</td>
+            </tr>
 
-                </div>
+
+            <tr>
+            <td><b>Email:</b></td>
+            <td>${email}</td>
+            </tr>
+
+
+            <tr>
+            <td><b>Mobile:</b></td>
+            <td>${mobile}</td>
+            </tr>
+
+
+            <tr>
+            <td><b>Subject:</b></td>
+            <td>${subject}</td>
+            </tr>
+
+
+            </table>
+
+
+
+            <h3>Message</h3>
+
+            <p>
+            ${message}
+            </p>
+
+
             </div>
+
+            </div>
+
+
             `
+
         });
 
+
+                // ===========================================
+        // Auto Reply Email To Customer
         // ===========================================
-        // Auto Reply Email
-        // ===========================================
+
 
         await transporter.sendMail({
-            from: `"Parth Vaghela" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: "Thank You for Contacting Me",
 
-            html: `
+            from:`"Parth Vaghela" <${process.env.EMAIL_USER}>`,
+
+            to:email,
+
+            subject:"Thank You for Contacting Me",
+
+
+            html:`
+
             <!DOCTYPE html>
+
             <html>
-            <head>
-                <meta charset="UTF-8">
-            </head>
 
-            <body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;">
-
-                <div style="max-width:600px;margin:30px auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,.1);">
-
-                    <div style="background:#2563eb;padding:35px;text-align:center;color:#fff;">
-                        <h1 style="margin:0;">Thank You!</h1>
-                        <p>Your message has been received successfully.</p>
-                    </div>
-
-                    <div style="padding:35px;color:#444;line-height:1.8;">
-
-                        <h2>Hello ${name}, 👋</h2>
-
-                        <p>
-                            Thank you for contacting me through my portfolio website.
-                            I appreciate your interest.
-                        </p>
-
-                        <div style="background:#f1f5ff;padding:18px;border-left:5px solid #2563eb;border-radius:5px;">
-
-                            ✔ Your message has been received successfully.<br><br>
-
-                            ✔ I will review your message carefully.<br><br>
-
-                            ✔ You can expect a reply within <strong>24-48 hours.</strong>
-
-                        </div>
-
-                        <p style="margin-top:25px;">
-                            Your submitted subject:
-                        </p>
-
-                        <div style="background:#fafafa;padding:15px;border-radius:5px;">
-                            <strong>${subject}</strong>
-                        </div>
-
-                        <p style="margin-top:30px;">
-                            Thank you once again for reaching out.
-                            I look forward to connecting with you soon.
-                        </p>
-
-                        <br>
-
-                        <strong>Best Regards,</strong><br><br>
-
-                        <strong>Jaiminkumar Vaghela</strong><br>
+            <body style="
+            margin:0;
+            padding:0;
+            background:#f4f4f4;
+            font-family:Arial,Helvetica,sans-serif;
+            ">
 
 
-                    </div>
-
-                    <div style="background:#f7f7f7;padding:25px;text-align:center;color:#666;font-size:14px;">
-
-                        <strong>Parth Vaghela</strong><br>
-
-                        MERN Stack Developer<br><br>
-
-                        📧 vaghelajaiminkumar528@gmail.com<br>
-
-                        🌐 https://jaiminkumar-portfolio.vercel.app/<br>
+            <div style="
+            max-width:600px;
+            margin:30px auto;
+            background:#ffffff;
+            border-radius:10px;
+            overflow:hidden;
+            box-shadow:0 5px 20px rgba(0,0,0,.1);
+            ">
 
 
-                        💼 https://www.linkedin.com/in/vaghelajaiminkumar73
+                <div style="
+                background:#2563eb;
+                padding:35px;
+                text-align:center;
+                color:white;
+                ">
 
-                        <br><br>
 
-                        © ${new Date().getFullYear()} Jaiminkumar Vaghela. All Rights Reserved.
+                    <h1>
+                    Thank You!
+                    </h1>
 
-                    </div>
+
+                    <p>
+                    Your message has been received successfully.
+                    </p>
+
 
                 </div>
+
+
+
+                <div style="
+                padding:35px;
+                color:#444;
+                line-height:1.8;
+                ">
+
+
+                    <h2>
+                    Hello ${name}, 👋
+                    </h2>
+
+
+
+                    <p>
+                    Thank you for contacting me through my portfolio website.
+                    I appreciate your interest.
+                    </p>
+
+
+
+                    <div style="
+                    background:#f1f5ff;
+                    padding:18px;
+                    border-left:5px solid #2563eb;
+                    border-radius:5px;
+                    ">
+
+
+                    ✔ Your message has been received successfully.
+                    <br><br>
+
+                    ✔ I will review your message carefully.
+                    <br><br>
+
+                    ✔ You can expect a reply within 
+                    <strong>24-48 hours.</strong>
+
+
+                    </div>
+
+
+
+                    <p style="margin-top:25px">
+
+                    Your submitted subject:
+
+                    </p>
+
+
+
+                    <div style="
+                    background:#fafafa;
+                    padding:15px;
+                    border-radius:5px;
+                    ">
+
+
+                    <strong>
+                    ${subject}
+                    </strong>
+
+
+                    </div>
+
+
+
+
+                    <p style="margin-top:30px">
+
+                    Thank you once again for reaching out.
+                    I look forward to connecting with you soon.
+
+                    </p>
+
+
+
+                    <br>
+
+
+                    <strong>
+                    Best Regards,
+                    </strong>
+
+
+                    <br><br>
+
+
+                    <strong>
+                    Parth Vaghela
+                    </strong>
+
+
+                </div>
+
+
+
+
+
+                <div style="
+                background:#f7f7f7;
+                padding:25px;
+                text-align:center;
+                color:#666;
+                font-size:14px;
+                ">
+
+
+
+                <strong>
+                Parth Vaghela
+                </strong>
+
+
+                <br>
+
+
+                MERN Stack Developer
+
+
+                <br><br>
+
+
+                📧 ${process.env.EMAIL_USER}
+
+
+                <br>
+
+
+                🌐 
+                https://jaiminkumar-portfolio.vercel.app/
+
+
+                <br><br>
+
+
+                © ${new Date().getFullYear()} 
+                Parth Vaghela.
+                All Rights Reserved.
+
+
+
+                </div>
+
+
+            </div>
+
 
             </body>
+
             </html>
+
             `
+
         });
+
+
+
+
+        // ===========================================
+        // Final Response
+        // ===========================================
+
 
         res.status(201).json({
-            success: true,
-            message: "Message sent successfully.",
-            data: contact
+
+            success:true,
+
+            message:"Message sent successfully.",
+
+            data:contact
+
         });
 
-    } catch (error) {
+
+
+    } catch(error){
+
 
         console.error(error);
 
+
+
         res.status(500).json({
-            success: false,
-            message: "Internal Server Error"
+
+            success:false,
+
+            message:"Internal Server Error"
+
         });
+
+
     }
+
 };
 
+
+
+
+// Export Controller
+
 module.exports = {
+
     createContact
+
 };
