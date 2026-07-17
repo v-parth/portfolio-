@@ -1,8 +1,6 @@
 const Contact = require("../models/contact");
 const transporter = require("../config/mailer");
 
-const ExcelJS = require("exceljs");
-const path = require("path");
 
 
 const createContact = async (req, res) => {
@@ -49,102 +47,7 @@ const createContact = async (req, res) => {
 
 
 
-        // ===========================================
-        // Save Contact Data Into Excel
-        // ===========================================
-
-
-        const filePath = path.join(
-
-            __dirname,
-            "../excel/clients.xlsx"
-
-        );
-
-
-
-        const workbook = new ExcelJS.Workbook();
-
-
-
-        try {
-
-            await workbook.xlsx.readFile(filePath);
-
-
-        } catch(error) {
-
-
-            const worksheet = workbook.addWorksheet("Clients");
-
-
-
-            worksheet.columns = [
-
-                {
-                    header:"Name",
-                    key:"name",
-                    width:20
-                },
-
-                {
-                    header:"Email",
-                    key:"email",
-                    width:30
-                },
-
-                {
-                    header:"Mobile",
-                    key:"mobile",
-                    width:15
-                },
-
-                {
-                    header:"Subject",
-                    key:"subject",
-                    width:25
-                },
-
-                {
-                    header:"Message",
-                    key:"message",
-                    width:40
-                },
-
-                {
-                    header:"Date",
-                    key:"date",
-                    width:25
-                }
-
-            ];
-
-        }
-
-
-
-        const worksheet = workbook.getWorksheet("Clients");
-
-
-
-        worksheet.addRow({
-
-            name,
-            email,
-            mobile,
-            subject,
-            message,
-            date:new Date().toLocaleString()
-
-        });
-
-
-
-        await workbook.xlsx.writeFile(filePath);
-
-
-
-
+  
         // ===========================================
         // Email To Admin
         // ===========================================

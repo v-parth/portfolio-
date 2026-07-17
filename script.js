@@ -249,7 +249,8 @@ if (form) {
         try {
 
             const response = await fetch(
-                "http://localhost:5000/api/contact",
+                // "http://localhost:5000/api/contact",
+                "https://your-render-backend-url.onrender.com/api/contact",
                 {
                     method: "POST",
                     headers: {
@@ -339,20 +340,20 @@ console.log(
 
 
 // Enable CORS
-app.use(cors({
+// app.use(cors({
 
-    origin:[
-        "http://127.0.0.1:5500",
-        "http://localhost:5500"
-    ],
+//     origin:[
+//         "http://127.0.0.1:5500",
+//         "http://localhost:5500"
+//     ],
 
-    methods:[
-        "GET",
-        "POST"
-    ],
+//     methods:[
+//         "GET",
+//         "POST"
+//     ],
 
-    allowedHeaders:[
-        "Content-Type"
-    ]
+//     allowedHeaders:[
+//         "Content-Type"
+//     ]
 
-}));
+// }));
