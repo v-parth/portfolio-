@@ -193,7 +193,7 @@ data-aos="zoom-in">
 
 <div class="glow-circle"></div>
 
-<img src="profile.png"
+<img src="./assets/profile.png"
 
 class="hero-image"
 
@@ -800,7 +800,7 @@ passion: "Building Modern Websites"
 
                     <div class="project-image">
 
-                        <img src="VS Home.png"
+                        <img src="./assets/VS Home.png"
                              class="img-fluid"
                              alt="VS Website Developer">
 
@@ -868,13 +868,13 @@ passion: "Building Modern Websites"
 
                     <div class="project-image">
 
-                        <img src="Home page.png"
+                        <img src="./assets/Home page.png"
                              class="img-fluid"
                              alt="Resin Art">
 
                         <div class="project-overlay">
 
-                            <a href="resin.mp4"
+                            <a href="./assets/resin.mp4"
                                class="btn btn-light btn-sm">
 
                                 <i class="fas fa-eye"></i>
@@ -937,7 +937,7 @@ passion: "Building Modern Websites"
 
                     <div class="project-image">
 
-                        <img src="Loan.png"
+                        <img src="./assets/Loan.png"
                              class="img-fluid"
                              alt="Consultancy">
 
@@ -1402,7 +1402,7 @@ Certificates
 
             <!-- Contact Form -->
 
-            <div class="col-lg-7">
+            <!-- <div class="col-lg-7">
 
                 <form class="contact-form">
 
@@ -1455,7 +1455,86 @@ Certificates
 
         </div>
 
-    </div>
+    </div> -->
+
+       <div class="col-lg-7">
+
+    <form id="contactForm" class="contact-form" novalidate>
+
+        <div class="row">
+
+            <div class="col-md-6 mb-4">
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    class="form-control"
+                    placeholder="Your Name"
+                    minlength="3"
+                    maxlength="50"
+                    required>
+
+            </div>
+
+            <div class="col-md-6 mb-4">
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Email Address"
+                    required>
+
+            </div>
+
+        </div>
+
+        <input
+            type="tel"
+            id="mobile"
+            name="mobile"
+            class="form-control mb-4"
+            placeholder="Mobile Number"
+            maxlength="10"
+            required>
+
+        <input
+            type="text"
+            id="subject"
+            name="subject"
+            class="form-control mb-4"
+            placeholder="Subject"
+            minlength="5"
+            maxlength="100"
+            required>
+
+        <textarea
+            id="message"
+            name="message"
+            class="form-control mb-4"
+            rows="6"
+            placeholder="Write your message..."
+            minlength="10"
+            maxlength="500"
+            required></textarea>
+
+        <button
+            id="submitBtn"
+            type="submit"
+            class="btn btn-primary btn-lg">
+
+            <span id="btnText">Send Message</span>
+
+            <i class="fas fa-paper-plane ms-2"></i>
+
+        </button>
+
+    </form>
+
+</div>
+
 
 </section>
 
@@ -1528,6 +1607,10 @@ Certificates
 <!-- Custom JS -->
 
 <script src="script.js"></script>
+
+<!-- Email Send the Customer JS  -->
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
 
 </body>
 

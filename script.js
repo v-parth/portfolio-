@@ -197,17 +197,95 @@ document.querySelectorAll(".project-card").forEach(card => {
    Contact Form
 ========================================== */
 
-const form = document.querySelector(".contact-form");
+// const form = document.querySelector(".contact-form");
+
+// if (form) {
+
+//     form.addEventListener("submit", function(e) {
+
+//         e.preventDefault();
+
+//         alert("Thank you! Your message has been sent successfully.");
+
+//         form.reset();
+
+//     });
+
+// }
+
+
+/* ==========================================
+   Contact Form API
+========================================== */
+
+/* ==========================================
+   Contact Form API
+========================================== */
+
+const form = document.getElementById("contactForm");
+const submitBtn = document.getElementById("submitBtn");
+const btnText = document.getElementById("btnText");
 
 if (form) {
 
-    form.addEventListener("submit", function(e) {
+    form.addEventListener("submit", async function (e) {
 
         e.preventDefault();
 
-        alert("Thank you! Your message has been sent successfully.");
+        // Disable button
+        submitBtn.disabled = true;
+        btnText.innerHTML = "Sending...";
 
-        form.reset();
+        const formData = {
+
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            mobile: document.getElementById("mobile").value,
+            subject: document.getElementById("subject").value,
+            message: document.getElementById("message").value
+
+        };
+
+        try {
+
+            const response = await fetch(
+                "https://jaimin-portfolio-api.onrender.com/api/contact",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                alert("✅ Message Sent Successfully!");
+
+                form.reset();
+
+            } else {
+
+                alert(data.message);
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("❌ Failed to Send Message!");
+
+        } finally {
+
+            // Enable button again
+            submitBtn.disabled = false;
+            btnText.innerHTML = "Send Message";
+
+        }
 
     });
 
