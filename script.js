@@ -250,7 +250,7 @@ if (form) {
 
             const response = await fetch(
                 // "http://localhost:5000/api/contact",
-                "https://your-render-backend-url.onrender.com/api/contact",
+                "https://portfolio-backend-imz3.onrender.com/api/contact",
                 {
                     method: "POST",
                     headers: {
