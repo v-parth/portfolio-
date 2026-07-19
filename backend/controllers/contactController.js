@@ -356,23 +356,33 @@ const createContact = async (req, res) => {
 
 
 
-    } catch(error){
+    } catch (error) {
+    console.error("CONTACT ERROR:", error);
+
+    res.status(500).json({
+        success: false,
+        message: error.message
+    });
+}
 
 
-        console.error(error);
+    //  catch(error){
+
+
+    //     console.error(error);
 
 
 
-        res.status(500).json({
+    //     res.status(500).json({
 
-            success:false,
+    //         success:false,
 
-            message:"Internal Server Error"
+    //         message:"Internal Server Error"
 
-        });
+    //     });
 
 
-    }
+    // }
 
 };
 
